@@ -10,7 +10,12 @@ from django.middleware.csrf import get_token
 import datetime
 import re
 from django.conf import settings
+from django.views.generic import TemplateView
+from django.views.decorators.cache import never_cache
 # Create your views here.
+
+index = never_cache(TemplateView.as_view(template_name='index.html'))
+
 @csrf_exempt
 def user_create(request):
     if request.method == 'POST':

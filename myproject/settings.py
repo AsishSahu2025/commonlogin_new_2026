@@ -159,7 +159,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://loginbg.bc-pl.com',
+    'https://login.bc-pl.com',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True

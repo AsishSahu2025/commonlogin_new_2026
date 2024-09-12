@@ -24,10 +24,10 @@ class AdminUser(models.Model):
     password=models.CharField(max_length=20)
     token = models.CharField(max_length=100)
     USER_TYPES = (
-        ('3d', '3D PRINTING'),
-        ('analytics', 'ANALYTICS'),
-        ('aqua', 'AQUA CULTURE'),
-        ('water', 'WATER BODY MANAGEMENT'),
+        ('3d', '3d'),
+        ('analytics', 'analytics'),
+        ('aqua', 'aqua'),
+        ('water', 'water'),
     )
     user_category = models.CharField(max_length=20, choices=USER_TYPES,default=USER_TYPES)
     def __str__(self):

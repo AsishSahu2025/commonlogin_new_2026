@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-qy%yqfqt@#*iz59jyhuu99p73)g-r%5-umq7+xhyz43ycxn^c-
 DEBUG = True
 
 # ALLOWED_HOSTS = ['*','login.bc-pl.com']
-ALLOWED_HOSTS = ['20.244.37.91','127.0.0.1','localhost']
+ALLOWED_HOSTS = ['*','20.235.240.236']
 
 
 # Application definition
@@ -155,11 +155,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-# STATIC_ROOT = os.path.join(BASE_DIR_URL, 'static')
-STATICFILES_DIR = [
-    os.path.join(BASE_DIR, 'static_cdn'),
-    os.path.join(BASE_DIR,'build','static'),
+STATIC_ROOT = os.path.join(BASE_DIR,'static/')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR , 'build/static')
 ]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -169,6 +169,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CSRF_TRUSTED_ORIGINS = [
 #     'https://login.bc-pl.com',
 # ]
+
 
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_CREDENTIALS = True

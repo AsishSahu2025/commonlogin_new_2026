@@ -83,40 +83,40 @@ DATABASES = {
     'default':{
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'commonlogindb',                      
-        'USER': 'Bariflolabs',
-        'PASSWORD':'Bfl@2024',
-        'HOST': 'aqua-postgres.postgres.database.azure.com',
+        'USER': 'Vertoxlabs',
+        'PASSWORD':'Vtx@2024',
+        'HOST': 'aqua.postgres.database.azure.com',
         'PORT': '5432', 
     }
 }
 
 ################## Admin IOT Database ########################################################
 ADMIN_DASH_DB_NAME = 'admindb'
-ADMIN_DASH_DB_USER = 'Bariflolabs'
-ADMIN_DASH_DB_PASS = 'Bfl@2024'
-ADMIN_DASH_DB_HOST = 'aqua-postgres.postgres.database.azure.com'
+ADMIN_DASH_DB_USER = 'Vertoxlabs'
+ADMIN_DASH_DB_PASS = 'Vtx@2024'
+ADMIN_DASH_DB_HOST = 'aqua-.postgres.database.azure.com'
 ADMIN_DASH_DB_PORT = '5432'
 
 
 ################## 3d IOT Database ########################################################
 THREED_DB_NAME = 'threeddb'
-THREED_DB_USER = 'Bariflolabs'
-THREED_DB_PASS = 'Bfl@2024'
-THREED_DB_HOST = 'aqua-postgres.postgres.database.azure.com'
+THREED_DB_USER = 'Vertoxlabs'
+THREED_DB_PASS = 'Vtx@2024'
+THREED_DB_HOST = 'aqua.postgres.database.azure.com'
 THREED_DB_PORT = '5432'
 
 ################## Aqua farming Database ########################################################
 AQUA_FARM_DB_NAME = 'aquadb'
-AQUA_FARM_DB_USER = 'Bariflolabs'
-AQUA_FARM_DB_PASS = 'Bfl@2024'
-AQUA_FARM_DB_HOST = 'aqua-postgres.postgres.database.azure.com'
+AQUA_FARM_DB_USER = 'Vertoxlabs'
+AQUA_FARM_DB_PASS = 'Vtx@2024'
+AQUA_FARM_DB_HOST = 'aqua.postgres.database.azure.com'
 AQUA_FARM_DB_PORT = '5432'
 
 ################## Waterbody Database ########################################################
 WATERBODY_DB_NAME = 'waterdb1'
-WATERBODY_DB_USER = 'Bariflolabs'
-WATERBODY_DB_PASS = 'Bfl@2024'
-WATERBODY_DB_HOST = 'aqua-postgres.postgres.database.azure.com'
+WATERBODY_DB_USER = 'Vertoxlabs'
+WATERBODY_DB_PASS = 'Vtx@2024'
+WATERBODY_DB_HOST = 'aqua.postgres.database.azure.com'
 WATERBODY_DB_PORT = '5432'
 
 

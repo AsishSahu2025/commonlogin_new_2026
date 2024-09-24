@@ -110,6 +110,7 @@ def login(request):
 
 @csrf_exempt
 def token_verification(request):
+    
     if request.method == 'POST':
         jsondata = JSONParser().parse(request)
         token = jsondata.get('token')

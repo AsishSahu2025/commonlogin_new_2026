@@ -94,7 +94,7 @@ DATABASES = {
 ADMIN_DASH_DB_NAME = 'admindb'
 ADMIN_DASH_DB_USER = 'Vertoxlabs'
 ADMIN_DASH_DB_PASS = 'Vtx@2024'
-ADMIN_DASH_DB_HOST = 'aqua-.postgres.database.azure.com'
+ADMIN_DASH_DB_HOST = 'aqua.postgres.database.azure.com'
 ADMIN_DASH_DB_PORT = '5432'
 
 

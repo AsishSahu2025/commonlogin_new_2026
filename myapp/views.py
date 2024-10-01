@@ -12,6 +12,8 @@ import re
 from django.conf import settings
 from django.views.generic import TemplateView
 from django.views.decorators.cache import never_cache
+from rest_framework import status
+
 # Create your views here.
 
 def index(request):
@@ -57,7 +59,7 @@ def login(request):
                 elif phone == str(users.Mobno) and str(users.user_category) == "analytics" and password == users.password:
                     return JsonResponse({'message':"Login Successful For analytics User",'username':users.Name,'mobno':users.Mobno,'token':users.token,'cat':users.user_category})
                 else:  
-                    return JsonResponse({'error':"Invalid credential for General user"})
+                    return JsonResponse({'error':"Invalid credential for General user"}, status=status.HTTP_404_NOT_FOUND)
             elif AdminUser.objects.filter(Mobno=phone).exists():
                 admin = AdminUser.objects.get(Mobno=phone)
                 if phone == str(admin.Mobno) and str(admin.user_category) == "3d" and password == admin.password:
@@ -69,9 +71,9 @@ def login(request):
                 elif phone == str(admin.Mobno) and str(admin.user_category) == "analytics" and password == admin.password:
                     return JsonResponse({'message':"Login Successful For analytics Admin",'username':admin.Name,'mobno':admin.Mobno,'token':admin.token,'cat':admin.user_category})
                 else:  
-                    return JsonResponse({'error':"Invalid credential for Admin user"})
+                    return JsonResponse({'error':"Invalid credential for Admin user"}, status=status.HTTP_404_NOT_FOUND)
             else:
-                return JsonResponse({'error':"Invalid credential"})
+                return JsonResponse({'error':"Invalid credential"}, status=status.HTTP_404_NOT_FOUND)
         elif email_pattern.match(phone):
             if User.objects.filter(Email=phone).exists():
                 users = User.objects.get(Email=phone)
@@ -84,13 +86,13 @@ def login(request):
                 elif phone == users.Email and str(users.user_category) == "analytics" and password == users.password:
                     return JsonResponse({'message':"Login Successful For analytics User",'username':users.Name,'mobno':users.Mobno,'token':users.token,'cat':users.user_category})
                 else:  
-                    return JsonResponse({'error':"Invalid credential for general user"})
+                    return JsonResponse({'error':"Invalid credential for general user"}, status=status.HTTP_404_NOT_FOUND)
             elif SuperAdmin.objects.filter(Username=phone).exists():
                 admin = SuperAdmin.objects.get(Username=phone)
                 if phone == admin.Username and password == admin.Password:
                     return JsonResponse({'message':"Login Successful For SuperAdmin",'username':admin.Username,'password':admin.Password})
                 else:  
-                    return JsonResponse({'error':"Invalid credential for SuperAdmin user"})
+                    return JsonResponse({'error':"Invalid credential for SuperAdmin user"}, status=status.HTTP_404_NOT_FOUND)
             elif AdminUser.objects.filter(Email=phone).exists():
                 admin = AdminUser.objects.get(Email=phone)
                 if phone == admin.Email and str(admin.user_category) == "3d" and password == admin.password:
@@ -102,11 +104,11 @@ def login(request):
                 elif phone == admin.Email and str(admin.user_category) == "analytics" and password == admin.password:
                     return JsonResponse({'message':"Login Successful For analytics Admin",'username':admin.Name,'mobno':admin.Mobno,'token':admin.token,'cat':admin.user_category})
                 else:  
-                    return JsonResponse({'error':"Invalid credential for Admin user"})
+                    return JsonResponse({'error':"Invalid credential for Admin user"} , status=status.HTTP_404_NOT_FOUND)
             else:  
-                return JsonResponse({'error':"Invalid credential"})
+                return JsonResponse({'error':"Invalid credential"}, status=status.HTTP_404_NOT_FOUND)
         else:
-            return JsonResponse({'error':"Invalid phone number or email format"})
+            return JsonResponse({'error':"Invalid phone number or email format"}, status=status.HTTP_404_NOT_FOUND)
 
 @csrf_exempt
 def token_verification(request):

@@ -104,7 +104,7 @@ def login(request):
                 elif phone == admin.Email and str(admin.user_category) == "analytics" and password == admin.password:
                     return JsonResponse({'message':"Login Successful For analytics Admin",'username':admin.Name,'mobno':admin.Mobno,'token':admin.token,'cat':admin.user_category})
                 else:  
-                    return JsonResponse({'error':"Invalid credential for Admin user"} , status=status.HTTP_404_NOT_FOUND)
+                    return JsonResponse({'error':"Invalid credential for Admin user"})
             else:  
                 return JsonResponse({'error':"Invalid credential"}, status=status.HTTP_404_NOT_FOUND)
         else:

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import User,Master
+from .models import *
 from rest_framework.parsers import JSONParser
 from django.http import JsonResponse
 from django.middleware import csrf
@@ -14,6 +14,7 @@ from django.views.generic import TemplateView
 from django.views.decorators.cache import never_cache
 from rest_framework import status
 
+from django.core.exceptions import ObjectDoesNotExist
 # Create your views here.
 
 def index(request):
@@ -94,7 +95,17 @@ def user_create(request):
 #                 if phone == admin.Username and password == admin.Password:
 #                     return JsonResponse({'message':"Login Successful For SuperAdmin",'username':admin.Username,'password':admin.Password})
 #                 else:  
-#                     return JsonResponse({'error':"Invalid credential for SuperAdmin user"}, status=status.HTTP_404_NOT_FOUND)
+#                     return JsonResponse({'error':"Invalid credential for se:
+                    #     response_data = {
+                    #         'message': 'You are not an owner.',
+                    #         'Mob': user.Mob,
+                    #         'name': user.Company_name,
+                    #         'email': user.Email,
+                    #         'csrf_token': csrf_token,
+                    #         'user_category': user.user_category,
+                    #         'category': "not_owner"
+                    #     }
+                    #     return SuperAdmin user"}, status=status.HTTP_404_NOT_FOUND)
 #             elif AdminUser.objects.filter(Email=phone).exists():
 #                 admin = AdminUser.objects.get(Email=phone)
 #                 if phone == admin.Email and str(admin.user_category) == "3d" and password == admin.password:
@@ -125,59 +136,71 @@ def login(request):
         userdata = JSONParser().parse(request)
         identifier = userdata.get('identifier')
         password = userdata.get('password')
-
+        
+        
         def is_valid_email(identifier):
             return "@" in identifier
 
         try:
             if is_valid_email(identifier):
-                admins = Master.objects.filter(Email=identifier, password=password)
-            else:
-                admins = Master.objects.filter(Mobno=identifier, password=password)
-
-            if admins.exists():
-                csrf_token = csrf.get_token(request)
-                admin = admins.first()
-                response_data = {
-                    'message': 'You are successfully entered the Master page...',
-                    'Mob': admin.Mobno,
-                    'name': admin.Name,
-                    'password': password,
-                    'email': admin.Email,
-                    'csrf_token': csrf_token,
-                    "category":"Master"
-                }
-                return JsonResponse(response_data, status=200)
-
-        except ObjectDoesNotExist:
-            pass
-
-        try:
-            if is_valid_email(identifier):
                 users = User.objects.filter(Email=identifier, password=password)
+                managers = Manager.objects.filter(Email=identifier, password=password)
             else:
                 users = User.objects.filter(Mob=identifier, password=password)
+                managers = Manager.objects.filter(Mob=identifier, password=password)
+
 
             if users.exists():
-                csrf_token = csrf.get_token(request)
                 user = users.first()
-                response_data = {
-                    'message': 'You are successfully logged in to the Manager page ....',
-                    'Mob': user.Mob,
-                    'name': user.Company_name,
-                    'email': user.Email,
-                    'csrf_token': csrf_token,
-                    'category':"Manager"
-                    
-                }
-                return JsonResponse(response_data, status=200)
+
+                # Ensure the User is in the "Water Body" or "Aqua Farming" category
+                if user.user_category in ['WaterBody', 'Aquafarming']:
+                    csrf_token = get_token(request)
+                    # Check if customer_category is 'owner'
+                    if user.customer_category == 'owner':
+                        response_data = {
+                            'message': 'You have successfully logged in to the owner page...',
+                            'Mob': user.Mob,
+                            'name': user.Company_name,
+                            'email': user.Email,
+                            'csrf_token': csrf_token,
+                            'user_category': user.user_category,
+                            'category': "master"
+                        }
+                        return JsonResponse(response_data, status=200)
+                    # return JsonResponse ()
+                
+            
+            if managers.exists():
+                manager = managers.first()
+                user = manager.user  # Get the associated User for the Manager
+                
+                # Check the user_category of the associated user
+                if user.user_category in ['WaterBody', 'Aquafarming']:
+                    csrf_token = get_token(request)
+                    response_data = {
+                        'message': 'You have successfully logged in as a manager...',
+                        'Mob': manager.Mob,
+                        'name': manager.username,
+                        'email': manager.email,
+                        'csrf_token': csrf_token,
+                        'user_category': user.user_category,
+                        'category': "manager"
+                    }
+                    return JsonResponse(response_data, status=200)
+
+            
+            # else:
+                return JsonResponse({'message': 'user does not exist.'}, status=403)
 
         except ObjectDoesNotExist:
             pass
 
+        # If no valid user is found
         return JsonResponse({'message': 'Invalid credentials'}, status=400)
 
     return JsonResponse({'message': 'Invalid request method'}, status=400)
+    
 
 
 

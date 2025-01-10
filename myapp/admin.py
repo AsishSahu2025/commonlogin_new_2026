@@ -10,3 +10,7 @@ class Master(admin.ModelAdmin):
     list_display = ['Name','Email','Mobno','password','created_at']
 
 
+   
+@admin.register(Manager)
+class Manager(admin.ModelAdmin):
+    list_display = ['username', 'password','Mob','email','user']

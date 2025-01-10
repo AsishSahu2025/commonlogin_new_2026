@@ -39,3 +39,13 @@ class User(models.Model):
         return str(self.Company_name)
     
 
+class Manager(models.Model):
+    username = models.CharField(max_length=100)
+    password = models.CharField(max_length=50)
+    Mob = models.BigIntegerField(primary_key=True)
+    email = models.EmailField()
+    # company_name = models.CharField(max_length=50,null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return str(self.username)

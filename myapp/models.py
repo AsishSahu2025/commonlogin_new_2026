@@ -1,36 +1,41 @@
 from django.db import models
 
 # Create your models here.
-class User(models.Model):
+class Master(models.Model):
     Name=models.CharField(max_length=50)
     Email=models.EmailField()
     Mobno=models.BigIntegerField(primary_key=True)
     password=models.CharField(max_length=50)
-    Adhaar=models.BigIntegerField()
-    token = models.CharField(max_length=100)
-    user_category = models.CharField(max_length=30)
+    created_at=models.DateTimeField(auto_now_add=True)
+    # customer_id=models.CharField(max_length=100)                                #commented by tapas
+    # token = models.CharField(max_length=100,blank=True, null=True)
+    # address = models.CharField(max_length=100)
+    # USER_TYPES = (
+    #     ('3d', '3d'),
+    #     ('analytics', 'analytics'),
+    #     ('aqua', 'aqua'),
+    #     ('water', 'water'),
+    # )
+    # user_category = models.CharField(max_length=30, choices=USER_TYPES,default=USER_TYPES)
     def __str__(self):
-        name=f"{self.Name}"
-        return name
+        return self.Name 
+        
 
-class SuperAdmin(models.Model):
-    Username=models.CharField(max_length=30)
-    Password=models.CharField(max_length=50)
 
-class AdminUser(models.Model):
-    Name=models.CharField(max_length=30)
+class User(models.Model):  
+    # id = models.AutoField()                                       
+    Company_name=models.CharField(max_length=30,null=False)
+    Mob=models.BigIntegerField(primary_key=True,unique=True)
     Email=models.EmailField()
-    Mobno=models.BigIntegerField(primary_key=True)
-    password=models.CharField(max_length=20)
-    token = models.CharField(max_length=100)
-    USER_TYPES = (
-        ('3d', '3d'),
-        ('analytics', 'analytics'),
-        ('aqua', 'aqua'),
-        ('water', 'water'),
-    )
-    user_category = models.CharField(max_length=20, choices=USER_TYPES,default=USER_TYPES)
+    Customer_id=models.CharField(max_length=100)
+    password = models.CharField(max_length=50, blank=True, null=True)
+    address=models.CharField(max_length=100, blank=True, null=True)
+    Pan_no = models.CharField(max_length=50)
+    GST_no = models.CharField(max_length=50)
+    user_category = models.CharField(max_length=50, blank=True, null=True)                   #commentout by tapas
+    customer_category = models.CharField(max_length=50, blank=True, null=True) 
+    # telegram_username = models.CharField(max_length=50, null=True, blank=True)
     def __str__(self):
-        name = f"{self.user_category}"
-        return name
+        return str(self.Company_name)
     
+

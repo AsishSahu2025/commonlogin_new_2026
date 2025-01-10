@@ -82,7 +82,7 @@ DATABASES = {
 
     'default':{
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'commonlogindb',                      
+        'NAME': 'commonlogintestdb',                      
         'USER': 'Vertoxlabs',
         'PASSWORD':'Vtx@2024',
         'HOST': 'aqua.postgres.database.azure.com',
@@ -91,7 +91,7 @@ DATABASES = {
 }
 
 ################## Admin IOT Database ########################################################
-ADMIN_DASH_DB_NAME = 'admindb'
+ADMIN_DASH_DB_NAME = 'admintestdb'
 ADMIN_DASH_DB_USER = 'Vertoxlabs'
 ADMIN_DASH_DB_PASS = 'Vtx@2024'
 ADMIN_DASH_DB_HOST = 'aqua.postgres.database.azure.com'
@@ -106,7 +106,7 @@ THREED_DB_HOST = 'aqua.postgres.database.azure.com'
 THREED_DB_PORT = '5432'
 
 ################## Aqua farming Database ########################################################
-AQUA_FARM_DB_NAME = 'aquadb'
+AQUA_FARM_DB_NAME = 'aqua1'
 AQUA_FARM_DB_USER = 'Vertoxlabs'
 AQUA_FARM_DB_PASS = 'Vtx@2024'
 AQUA_FARM_DB_HOST = 'aqua.postgres.database.azure.com'

@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-qy%yqfqt@#*iz59jyhuu99p73)g-r%5-umq7+xhyz43ycxn^c-
 DEBUG = True
 
 # ALLOWED_HOSTS = ['*','login.bc-pl.com']
-ALLOWED_HOSTS = ['*','20.235.240.236']
+ALLOWED_HOSTS = ['*','20.198.156.60']
 
 
 # Application definition
@@ -166,9 +166,9 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CSRF_TRUSTED_ORIGINS = [
-#     'https://login.bc-pl.com',
-# ]
+CSRF_TRUSTED_ORIGINS = [
+    'https://newlogin.bc-pl.com',
+]
 
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -176,9 +176,9 @@ CORS_ORIGIN_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST =[
     'https://localhost:3000',
 ]
-CORS_ORIGIN_REGEX_WHITELIST = [
-    'https://localhost:3000',
-]
+# CORS_ORIGIN_REGEX_WHITELIST = [
+#     'https://localhost:3000',
+# ]
 
 
 

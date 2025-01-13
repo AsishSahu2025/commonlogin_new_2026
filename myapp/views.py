@@ -143,11 +143,26 @@ def login(request):
 
         try:
             if is_valid_email(identifier):
+                masters = Master.objects.filter(Email=identifier, password=password)
                 users = User.objects.filter(Email=identifier, password=password)
                 managers = Manager.objects.filter(Email=identifier, password=password)
             else:
+                masters = Master.objects.filter(Mobno=identifier, password=password)
                 users = User.objects.filter(Mob=identifier, password=password)
                 managers = Manager.objects.filter(Mob=identifier, password=password)
+                
+                
+            if masters.exists():
+                master = masters.first()
+                response_data = {
+                    'message': "you have successfully logged in as master....",
+                    'Mob': master.Mobno,
+                    'name': master.Name,
+                    'email': master.Email,
+                    'csrf_token': get_token(request),
+                    'category': 'master'
+                }
+                return JsonResponse(response_data, status=200)
 
 
             if users.exists():
@@ -165,7 +180,7 @@ def login(request):
                             'email': user.Email,
                             'csrf_token': csrf_token,
                             'user_category': user.user_category,
-                            'category': "master"
+                            'category': "owner"
                         }
                         return JsonResponse(response_data, status=200)
                     # return JsonResponse ()
@@ -191,7 +206,7 @@ def login(request):
 
             
             # else:
-                return JsonResponse({'message': 'user does not exist.'}, status=403)
+                # return JsonResponse({'message': 'user does not exist.'}, status=403)
 
         except ObjectDoesNotExist:
             pass

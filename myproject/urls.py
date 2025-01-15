@@ -8,7 +8,7 @@ from myapp import views as myapp
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', myapp.index, name='index'),
+    # path('', myapp.index, name='index'),
     path('user_create/',myapp.user_create,name='user_create'),
     path('login/',myapp.login,name='login'),
     path('token_verification/',myapp.token_verification,name='token_verification'),

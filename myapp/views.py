@@ -135,7 +135,9 @@ def login(request):
     if request.method == 'POST':
         userdata = JSONParser().parse(request)
         identifier = userdata.get('identifier')
+        print(identifier,"111111111111111111111")
         password = userdata.get('password')
+        print(password,"222222222222222222222222222222")
         
         
         def is_valid_email(identifier):
@@ -144,12 +146,18 @@ def login(request):
         try:
             if is_valid_email(identifier):
                 masters = Master.objects.filter(Email=identifier, password=password)
+                print(masters,"3333333333")
                 users = User.objects.filter(Email=identifier, password=password)
+                print(users,"44444444444")
                 managers = Manager.objects.filter(Email=identifier, password=password)
+                print(managers,"5555555555555")
             else:
                 masters = Master.objects.filter(Mobno=identifier, password=password)
+                print(masters,"6666666666666")
                 users = User.objects.filter(Mob=identifier, password=password)
+                print(users,"77777777777")
                 managers = Manager.objects.filter(Mob=identifier, password=password)
+                print(managers,"888888888888")
                 
                 
             if masters.exists():
@@ -162,6 +170,7 @@ def login(request):
                     'csrf_token': get_token(request),
                     'category': 'master'
                 }
+                print("masters exists","abcd")
                 return JsonResponse(response_data, status=200)
 
 
@@ -182,10 +191,10 @@ def login(request):
                             'user_category': user.user_category,
                             'category': "owner"
                         }
+                        print("owner exists")
+                    
                         return JsonResponse(response_data, status=200)
                     # return JsonResponse ()
-                
-            
             if managers.exists():
                 manager = managers.first()
                 user = manager.user  # Get the associated User for the Manager
@@ -202,6 +211,7 @@ def login(request):
                         'user_category': user.user_category,
                         'category': "manager"
                     }
+                    print("manager exists","mnbv")
                     return JsonResponse(response_data, status=200)
 
             

@@ -3,7 +3,7 @@ from  .models import *
 
 @admin.register(User)
 class User(admin.ModelAdmin):
-    list_display = ['Company_name','Mob','Email','Customer_id','password','address','Pan_no','GST_no','user_category','customer_category']
+    list_display = ['Company_name','Mob','Email','Customer_id','password','address','Pan_no','GST_no','user_category','customer_category','token']
     
 @admin.register(Master)
 class Master(admin.ModelAdmin):

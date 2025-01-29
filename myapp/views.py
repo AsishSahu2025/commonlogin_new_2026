@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.middleware import csrf
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
+from .helper import send_forget_password_mail
 import psycopg2
 from django.middleware.csrf import get_token
 import datetime
@@ -149,7 +150,7 @@ def login(request):
                 print(masters,"3333333333")
                 users = User.objects.filter(Email=identifier, password=password)
                 print(users,"44444444444")
-                managers = Manager.objects.filter(Email=identifier, password=password)
+                managers = Manager.objects.filter(email=identifier, password=password)
                 print(managers,"5555555555555")
             else:
                 masters = Master.objects.filter(Mobno=identifier, password=password)
@@ -606,3 +607,66 @@ def forgetpasswords(request):
             return JsonResponse({"message":"Password reset email sent successfully"})
         else:
             return JsonResponse({"message":"No admin account found with this email"})
+        
+
+
+############################################################################
+
+
+@csrf_exempt
+def myhtml(request,token):
+    if request.method == "POST":
+        password = request.POST.get('password')
+
+        try:
+            submit = User.objects.get(token=token)
+        
+            submit.password = password
+            submit.save()
+            
+            param = {
+                'host': settings.COMMONLOGIN_DB_HOST,
+                'database': settings.COMMONLOGIN_DB_NAME,
+                'user': settings.COMMONLOGIN_DB_USER,
+                'password': settings.COMMONLOGIN_DB_PASS
+            }
+            conn = psycopg2.connect(**param)
+            cur = conn.cursor()
+            
+            email = submit.Email  
+            
+            cur.execute('UPDATE public.myapp_user SET password = %s WHERE "Email" = %s;', (password, email))
+            conn.commit()
+            return JsonResponse({'message': 'Password successfully changed'}, status=200)
+
+        
+        except User.DoesNotExist:
+            return JsonResponse({'message': 'Invalid token'}, status=404)
+        except Exception as e:
+            # Log the exception for debugging
+            print(f'Error occurred: {e}')
+            return JsonResponse({'message': 'An error occurred'}, status=500)
+
+        finally:
+            # Ensure proper resource cleanup
+            if cur:
+                cur.close()
+            if conn:
+                conn.close()
+    
+    return render(request,'home.html')
+
+
+import uuid
+@csrf_exempt
+def forgotpassword(request):
+    if request.method == 'POST':
+        jsondata = JSONParser().parse(request)
+        email = jsondata.get('Email')
+        try:
+            user = User.objects.get(Email=email)
+            reset_token = user.token
+            send_forget_password_mail(email, reset_token)
+            return JsonResponse({'message': 'We send a change password link to your registered email id .Please click the link to reset password'}, status=200)
+        except ObjectDoesNotExist:
+            return JsonResponse({'message': 'Email does not exist'}, status=404)

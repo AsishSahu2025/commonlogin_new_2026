@@ -18,4 +18,7 @@ urlpatterns = [
     path('admincreate/',myapp.admincreate),
     path('admin_delete/',myapp.admin_delete),
     path('admin_view/',myapp.admin_view),
+    path('forgotpassword/',myapp.forgotpassword),
+    path('myhtml/<token>',myapp.myhtml)
+    
 ]

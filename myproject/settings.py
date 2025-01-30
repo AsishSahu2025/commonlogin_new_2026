@@ -106,14 +106,14 @@ THREED_DB_HOST = 'aqua.postgres.database.azure.com'
 THREED_DB_PORT = '5432'
 
 ################## Aqua farming Database ########################################################
-AQUA_FARM_DB_NAME = 'aqua1'
+AQUA_FARM_DB_NAME = 'aquatest'
 AQUA_FARM_DB_USER = 'Vertoxlabs'
 AQUA_FARM_DB_PASS = 'Vtx@2024'
 AQUA_FARM_DB_HOST = 'aqua.postgres.database.azure.com'
 AQUA_FARM_DB_PORT = '5432'
 
 ################## Waterbody Database ########################################################
-WATERBODY_DB_NAME = 'waterdb1'
+WATERBODY_DB_NAME = 'watertestdb'
 WATERBODY_DB_USER = 'Vertoxlabs'
 WATERBODY_DB_PASS = 'Vtx@2024'
 WATERBODY_DB_HOST = 'aqua.postgres.database.azure.com'

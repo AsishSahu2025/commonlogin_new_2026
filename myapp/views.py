@@ -625,10 +625,10 @@ def myhtml(request,token):
             submit.save()
             
             param = {
-                'host': settings.COMMONLOGIN_DB_HOST,
-                'database': settings.COMMONLOGIN_DB_NAME,
-                'user': settings.COMMONLOGIN_DB_USER,
-                'password': settings.COMMONLOGIN_DB_PASS
+                'host': settings.AQUA_FARM_DB_HOST,
+                'database': settings.AQUA_FARM_DB_NAME,
+                'user': settings.AQUA_FARM_DB_USER,
+                'password': settings.AQUA_FARM_DB_PASS
             }
             conn = psycopg2.connect(**param)
             cur = conn.cursor()

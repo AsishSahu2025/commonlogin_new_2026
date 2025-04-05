@@ -519,98 +519,98 @@ def register_view(request):
             pass
     except Exception as e:  
             return JsonResponse({'error': str(e)}, status=500)
-@api_view(['POST'])
-@csrf_exempt        
-def admincreate(request):
-    if request.method == 'POST':
-        userimg=request.data['userimg']
-        print(userimg)
-        firstname=request.data['firstname']
-        lastname=request.data['lastname']
-        email=request.data['email']
-        mobno=request.data['mobno']
-        password=request.data['password']
-        usertype=request.data['user_cat']
-        fullname=firstname+" "+lastname
-        a = AdminUser.objects.filter(Mobno=mobno)
-        b = User.objects.filter(Mobno=mobno)
-        # try:
-        if b.exists():
-            return JsonResponse({"message":"Mobile no already used as General User"})
-        if not a.exists():
-            token = get_token(request)
-            datas = AdminUser(Name=fullname,Email=email,Mobno=mobno,password=password,user_category=usertype,token=token)
-            datas.save()
-            param = {
-                    'host':settings.ADMIN_DASH_DB_HOST,
-                    'database':settings.ADMIN_DASH_DB_NAME,
-                    'user':settings.ADMIN_DASH_DB_USER,
-                    'password':settings.ADMIN_DASH_DB_PASS
-                    }
-            conn = psycopg2.connect(**param)
-            print("connected")
-            cur = conn.cursor() 
-            cur.execute('INSERT INTO public.app1_adminuser("Name", "Email", "Mobno", "password", "token", "user_category", "user_img") VALUES (%s, %s, %s, %s, %s, %s, %s);', (f'{fullname}', f'{email}', f'{mobno}', f'{password}', f'{token}', f'{usertype}', f'{userimg}'))
-            conn.commit()
-            return JsonResponse({"message":"Admin user created"})
-        else:
-            return JsonResponse({"message":"Mobile no. already exists"})
-            # else:
+# @api_view(['POST'])
+# @csrf_exempt        
+# def admincreate(request):
+#     if request.method == 'POST':
+#         userimg=request.data['userimg']
+#         print(userimg)
+#         firstname=request.data['firstname']
+#         lastname=request.data['lastname']
+#         email=request.data['email']
+#         mobno=request.data['mobno']
+#         password=request.data['password']
+#         usertype=request.data['user_cat']
+#         fullname=firstname+" "+lastname
+#         a = AdminUser.objects.filter(Mobno=mobno)
+#         b = User.objects.filter(Mobno=mobno)
+#         # try:
+#         if b.exists():
+#             return JsonResponse({"message":"Mobile no already used as General User"})
+#         if not a.exists():
+#             token = get_token(request)
+#             datas = AdminUser(Name=fullname,Email=email,Mobno=mobno,password=password,user_category=usertype,token=token)
+#             datas.save()
+#             param = {
+#                     'host':settings.ADMIN_DASH_DB_HOST,
+#                     'database':settings.ADMIN_DASH_DB_NAME,
+#                     'user':settings.ADMIN_DASH_DB_USER,
+#                     'password':settings.ADMIN_DASH_DB_PASS
+#                     }
+#             conn = psycopg2.connect(**param)
+#             print("connected")
+#             cur = conn.cursor() 
+#             cur.execute('INSERT INTO public.app1_adminuser("Name", "Email", "Mobno", "password", "token", "user_category", "user_img") VALUES (%s, %s, %s, %s, %s, %s, %s);', (f'{fullname}', f'{email}', f'{mobno}', f'{password}', f'{token}', f'{usertype}', f'{userimg}'))
+#             conn.commit()
+#             return JsonResponse({"message":"Admin user created"})
+#         else:
+#             return JsonResponse({"message":"Mobile no. already exists"})
+#             # else:
             #     return JsonResponse({"message":"Mobile no. already exists"})
         # except Exception as e:
         #     return JsonResponse({"error":str(e)})
 
-@csrf_exempt        
-def admin_delete(request):
-    if request.method == 'POST':
-        admininstance = JSONParser().parse(request)
-        mobno=admininstance.get('mobno')
-        param = {
-                    'host':settings.ADMIN_DASH_DB_HOST,
-                    'database':settings.ADMIN_DASH_DB_NAME,
-                    'user':settings.ADMIN_DASH_DB_USER,
-                    'password':settings.ADMIN_DASH_DB_PASS
-                    }
-        conn = psycopg2.connect(**param)
-        print("connected")
-        cur = conn.cursor() 
-        cur.execute(f'DELETE FROM public.app1_adminuser WHERE "Mobno"={mobno};')
-        conn.commit()
-        a = AdminUser.objects.get(Mobno=mobno)
-        a.delete()
-        return JsonResponse({"message":"Admin deleted"})
+# @csrf_exempt        
+# def admin_delete(request):
+#     if request.method == 'POST':
+#         admininstance = JSONParser().parse(request)
+#         mobno=admininstance.get('mobno')
+#         param = {
+#                     'host':settings.ADMIN_DASH_DB_HOST,
+#                     'database':settings.ADMIN_DASH_DB_NAME,
+#                     'user':settings.ADMIN_DASH_DB_USER,
+#                     'password':settings.ADMIN_DASH_DB_PASS
+#                     }
+#         conn = psycopg2.connect(**param)
+#         print("connected")
+#         cur = conn.cursor() 
+#         cur.execute(f'DELETE FROM public.app1_adminuser WHERE "Mobno"={mobno};')
+#         conn.commit()
+#         a = AdminUser.objects.get(Mobno=mobno)
+#         a.delete()
+#         return JsonResponse({"message":"Admin deleted"})
     
-@csrf_exempt        
-def admin_view(request):
-    if request.method == 'GET':
-        a = AdminUser.objects.all()
-        data = [(i.Name,i.Email,i.Mobno,i.user_category,i.password) for i in a]
+# @csrf_exempt        
+# def admin_view(request):
+#     if request.method == 'GET':
+#         a = AdminUser.objects.all()
+#         data = [(i.Name,i.Email,i.Mobno,i.user_category,i.password) for i in a]
 
             
-@csrf_exempt
-def forgetpasswords(request):
-    if request.method == 'POST':
-        admininstance = JSONParser().parse(request)
-        email=admininstance.get('email')
-        a = User.objects.filter(Email=email)
-        if a.exists():
-            admin = a.first()
-            admin.password = get_random_password(length=10, allowed_chars='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
-            admin.save()
-            send_mail(
-                'Password Reset',
-                f'Your password has been reset to {admin.password}. Please login to your account and change it.',
-                'your-email@example.com',
-                [admin.Email],
-                fail_silently=False,
-            )
-            return JsonResponse({"message":"Password reset email sent successfully"})
-        else:
-            return JsonResponse({"message":"No admin account found with this email"})
+# @csrf_exempt
+# def forgetpasswords(request):
+#     if request.method == 'POST':
+#         admininstance = JSONParser().parse(request)
+#         email=admininstance.get('email')
+#         a = User.objects.filter(Email=email)
+#         if a.exists():
+#             admin = a.first()
+#             admin.password = get_random_password(length=10, allowed_chars='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
+#             admin.save()
+#             send_mail(
+#                 'Password Reset',
+#                 f'Your password has been reset to {admin.password}. Please login to your account and change it.',
+#                 'your-email@example.com',
+#                 [admin.Email],
+#                 fail_silently=False,
+#             )
+#             return JsonResponse({"message":"Password reset email sent successfully"})
+#         else:
+#             return JsonResponse({"message":"No admin account found with this email"})
         
 
 
-############################################################################
+# ############################################################################
 
 
 @csrf_exempt

@@ -79,13 +79,14 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-
+    
     'default':{
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'commonlogintestdb',                      
+        'NAME': 'commonlogin',                           
         'USER': 'Vertoxlabs',
-        'PASSWORD':'Vtx@2024',
-        'HOST': 'aqua.postgres.database.azure.com',
+        'PASSWORD':'Vtx@2025',
+        'HOST': 'bcpostgressqlserver.postgres.database.azure.com',
+        # 'HOST': '34.30.164.227',
         'PORT': '5432', 
     }
 }
@@ -106,10 +107,10 @@ THREED_DB_HOST = 'aqua.postgres.database.azure.com'
 THREED_DB_PORT = '5432'
 
 ################## Aqua farming Database ########################################################
-AQUA_FARM_DB_NAME = 'aquatest'
+AQUA_FARM_DB_NAME = 'masterdb'
 AQUA_FARM_DB_USER = 'Vertoxlabs'
-AQUA_FARM_DB_PASS = 'Vtx@2024'
-AQUA_FARM_DB_HOST = 'aqua.postgres.database.azure.com'
+AQUA_FARM_DB_PASS = 'Vtx@2025'
+AQUA_FARM_DB_HOST = 'bcpostgressqlserver.postgres.database.azure.com'
 AQUA_FARM_DB_PORT = '5432'
 
 ################## Waterbody Database ########################################################

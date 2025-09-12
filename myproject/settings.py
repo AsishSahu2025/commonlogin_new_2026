@@ -88,7 +88,15 @@ DATABASES = {
         'HOST': 'bcpostgressqlserver.postgres.database.azure.com',
         # 'HOST': '34.30.164.227',
         'PORT': '5432', 
-    }
+    },
+    "local": {   # Local PostgreSQL (for development)
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
+        "NAME": "commonlogin",   # your local DB name
+        "USER": "vertoxl",         # your local postgres username
+        "PASSWORD": "vertoxlabs", # your local postgres password
+        "HOST": "192.168.1.140",
+        "PORT": "5432",
+    },
 }
 
 ################## Admin IOT Database ########################################################

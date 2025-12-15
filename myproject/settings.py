@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-qy%yqfqt@#*iz59jyhuu99p73)g-r%5-umq7+xhyz43ycxn^c-
 DEBUG = True
 
 # ALLOWED_HOSTS = ['*','login.bc-pl.com']
-ALLOWED_HOSTS = ['*','57.158.153.62','newloginbg.bc-pl.com']
+ALLOWED_HOSTS = ['*','192.168.1.40']
 
 
 # Application definition
@@ -59,7 +59,7 @@ ROOT_URLCONF = 'myproject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'build')],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -74,59 +74,97 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'myproject.wsgi.application'
 
-
+#********************************************************************************************
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
 DATABASES = {
     
-    'default':{
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'commonlogin',                           
-        'USER': 'Vertoxlabs',
-        'PASSWORD':'Vtx@2025',
-        'HOST': 'bcpostgressqlserver.postgres.database.azure.com',
-        # 'HOST': '34.30.164.227',
-        'PORT': '5432', 
-    },
-    "local": {   # Local PostgreSQL (for development)
+    # 'default':{
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'commonlogin',                           
+    #     'USER': 'Vertoxlabs',
+    #     'PASSWORD':'Vtx@2025',
+    #     'HOST': 'bcpostgressqlserver.postgres.database.azure.com',
+    #     # 'HOST': '34.30.164.227',
+    #     'PORT': '5432', 
+    # },
+    "default": {   # Local PostgreSQL (for development)
         "ENGINE": "django.contrib.gis.db.backends.postgis",
         "NAME": "commonlogin",   # your local DB name
         "USER": "vertoxl",         # your local postgres username
         "PASSWORD": "vertoxlabs", # your local postgres password
         "HOST": "192.168.1.140",
         "PORT": "5432",
-    },
+    }
 }
+#*********************************************************************************************
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 ################## Admin IOT Database ########################################################
-ADMIN_DASH_DB_NAME = 'admintestdb'
-ADMIN_DASH_DB_USER = 'Vertoxlabs'
-ADMIN_DASH_DB_PASS = 'Vtx@2024'
-ADMIN_DASH_DB_HOST = 'aqua.postgres.database.azure.com'
+ADMIN_DASH_DB_NAME = 'masterdb'
+ADMIN_DASH_DB_USER = 'vertoxl'
+ADMIN_DASH_DB_PASS = 'vertoxlabs'
+ADMIN_DASH_DB_HOST = '192.168.1.140'
 ADMIN_DASH_DB_PORT = '5432'
 
 
 ################## 3d IOT Database ########################################################
 THREED_DB_NAME = 'threeddb'
-THREED_DB_USER = 'Vertoxlabs'
-THREED_DB_PASS = 'Vtx@2024'
-THREED_DB_HOST = 'aqua.postgres.database.azure.com'
+THREED_DB_USER = 'vertoxl'
+THREED_DB_PASS = 'vertoxlabs'
+THREED_DB_HOST = '192.168.1.140'
 THREED_DB_PORT = '5432'
 
 ################## Aqua farming Database ########################################################
 AQUA_FARM_DB_NAME = 'masterdb'
-AQUA_FARM_DB_USER = 'Vertoxlabs'
-AQUA_FARM_DB_PASS = 'Vtx@2025'
-AQUA_FARM_DB_HOST = 'bcpostgressqlserver.postgres.database.azure.com'
+AQUA_FARM_DB_USER = 'vertoxl'
+AQUA_FARM_DB_PASS = 'vertoxlabs'
+AQUA_FARM_DB_HOST = '192.168.1.140'
 AQUA_FARM_DB_PORT = '5432'
 
 ################## Waterbody Database ########################################################
 WATERBODY_DB_NAME = 'watertestdb'
-WATERBODY_DB_USER = 'Vertoxlabs'
-WATERBODY_DB_PASS = 'Vtx@2024'
-WATERBODY_DB_HOST = 'aqua.postgres.database.azure.com'
+WATERBODY_DB_USER = 'vertoxl'
+WATERBODY_DB_PASS = 'vertoxlabs'
+WATERBODY_DB_HOST = '192.168.1.140'
 WATERBODY_DB_PORT = '5432'
+
+
+
+
+# ################## Admin IOT Database ########################################################
+# ADMIN_DASH_DB_NAME = 'admintestdb'
+# ADMIN_DASH_DB_USER = 'Vertoxlabs'
+# ADMIN_DASH_DB_PASS = 'Vtx@2024'
+# ADMIN_DASH_DB_HOST = 'aqua.postgres.database.azure.com'
+# ADMIN_DASH_DB_PORT = '5432'
+
+
+# ################## 3d IOT Database ########################################################
+# THREED_DB_NAME = 'threeddb'
+# THREED_DB_USER = 'Vertoxlabs'
+# THREED_DB_PASS = 'Vtx@2024'
+# THREED_DB_HOST = 'aqua.postgres.database.azure.com'
+# THREED_DB_PORT = '5432'
+
+# ################## Aqua farming Database ########################################################
+# AQUA_FARM_DB_NAME = 'masterdb'
+# AQUA_FARM_DB_USER = 'Vertoxlabs'
+# AQUA_FARM_DB_PASS = 'Vtx@2025'
+# AQUA_FARM_DB_HOST = 'bcpostgressqlserver.postgres.database.azure.com'
+# AQUA_FARM_DB_PORT = '5432'
+
+# ################## Waterbody Database ########################################################
+# WATERBODY_DB_NAME = 'watertestdb'
+# WATERBODY_DB_USER = 'Vertoxlabs'
+# WATERBODY_DB_PASS = 'Vtx@2024'
+# WATERBODY_DB_HOST = 'aqua.postgres.database.azure.com'
+# WATERBODY_DB_PORT = '5432'
 
 
 # Password validation
@@ -153,7 +191,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -175,9 +213,9 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://newloginbg.bc-pl.com',
-]
+# CSRF_TRUSTED_ORIGINS = [
+#     'https://newloginbg.bc-pl.com',
+# ]
 
 
 

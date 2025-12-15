@@ -14,8 +14,10 @@ from django.conf import settings
 from django.views.generic import TemplateView
 from django.views.decorators.cache import never_cache
 from rest_framework import status
-
+from .serializers import MasterDetailsSerializer,ManagerRegisterSerializer
+from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.views import APIView
 # Create your views here.
 
 def index(request):
@@ -125,42 +127,29 @@ def user_create(request):
 #             return JsonResponse({'error':"Invalid phone number or email format"}, status=status.HTTP_404_NOT_FOUND)
 
 
-
 import time
-
-# Define a dictionary to keep track of login attempts
-login_attempts = {}
-
 @csrf_exempt
 def login(request):
     if request.method == 'POST':
         userdata = JSONParser().parse(request)
         identifier = userdata.get('identifier')
-        print(identifier,"111111111111111111111")
         password = userdata.get('password')
-        print(password,"222222222222222222222222222222")
-        
-        
+
         def is_valid_email(identifier):
             return "@" in identifier
 
         try:
+            # Check by email or mobile
             if is_valid_email(identifier):
                 masters = Master.objects.filter(Email=identifier, password=password)
-                print(masters,"3333333333")
                 users = User.objects.filter(Email=identifier, password=password)
-                print(users,"44444444444")
                 managers = Manager.objects.filter(email=identifier, password=password)
-                print(managers,"5555555555555")
             else:
                 masters = Master.objects.filter(Mobno=identifier, password=password)
-                print(masters,"6666666666666")
                 users = User.objects.filter(Mob=identifier, password=password)
-                print(users,"77777777777")
                 managers = Manager.objects.filter(Mob=identifier, password=password)
-                print(managers,"888888888888")
-                
-                
+
+            # MASTER LOGIN
             if masters.exists():
                 master = masters.first()
                 response_data = {
@@ -171,36 +160,28 @@ def login(request):
                     'csrf_token': get_token(request),
                     'category': 'master'
                 }
-                print("masters exists","abcd")
                 return JsonResponse(response_data, status=200)
 
-
+            # USER LOGIN (OWNER)
             if users.exists():
                 user = users.first()
-
-                # Ensure the User is in the "Water Body" or "Aqua Farming" category
                 if user.user_category in ['WaterBody', 'Aquafarming']:
                     csrf_token = get_token(request)
-                    # Check if customer_category is 'owner'
-                    if user.customer_category == 'owner':
-                        response_data = {
-                            'message': 'You have successfully logged in to the owner page...',
-                            'Mob': user.Mob,
-                            'name': user.Company_name,
-                            'email': user.Email,
-                            'csrf_token': csrf_token,
-                            'user_category': user.user_category,
-                            'category': "owner"
-                        }
-                        print("owner exists")
-                    
-                        return JsonResponse(response_data, status=200)
-                    # return JsonResponse ()
+                    response_data = {
+                        'message': 'You have successfully logged in to the owner page...',
+                        'Mob': user.Mob,
+                        'name': user.Company_name,
+                        'email': user.Email,
+                        'user_category':user.user_category,
+                        'csrf_token': csrf_token,
+                        'category': "owner"
+                    }
+                    return JsonResponse(response_data, status=200)
+
+            # MANAGER LOGIN
             if managers.exists():
                 manager = managers.first()
-                user = manager.user  # Get the associated User for the Manager
-                
-                # Check the user_category of the associated user
+                user = manager.user
                 if user.user_category in ['WaterBody', 'Aquafarming']:
                     csrf_token = get_token(request)
                     response_data = {
@@ -209,316 +190,485 @@ def login(request):
                         'name': manager.username,
                         'email': manager.email,
                         'csrf_token': csrf_token,
-                        'user_category': user.user_category,
+                        'user_category': manager.user_category,
                         'category': "manager"
                     }
-                    print("manager exists","mnbv")
                     return JsonResponse(response_data, status=200)
-
-            
-            # else:
-                # return JsonResponse({'message': 'user does not exist.'}, status=403)
 
         except ObjectDoesNotExist:
             pass
 
-        # If no valid user is found
         return JsonResponse({'message': 'Invalid credentials'}, status=400)
 
     return JsonResponse({'message': 'Invalid request method'}, status=400)
+
     
 
 
 
 
+#***********Token Varification**********#
+########################################
 @csrf_exempt
 def token_verification(request):
-    
     if request.method == 'POST':
         jsondata = JSONParser().parse(request)
         token = jsondata.get('token')
 
+        # Check in Master Table
         try:
-            data = User.objects.get(token=token)
-            return JsonResponse({'message': 'Authenticated successfully.',"token":data.token,"mobile_no":data.Mobno,"username":data.password})
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
+            master = Master.objects.get(token=token)
+            return JsonResponse({
+                'message': 'Authenticated successfully.',
+                'model': 'Master',
+                'token': master.token,
+                'mobile_no': master.Mobno,
+                'username': master.Name,
+            })
+        except Master.DoesNotExist:
+            pass
 
-@csrf_exempt
-# @permission_classes([IsAuthenticated])
-def registration(request):
-    if request.method == 'POST':
-        regd_instance=JSONParser().parse(request)
-        firstname=regd_instance.get('firstname')
-        lastname=regd_instance.get('lastname')
-        Email=regd_instance.get('email')
-        Mobno=regd_instance.get('mobno')
-        Adhaar=regd_instance.get('adhaar')
-        user_cat=regd_instance.get('user_cat')
-        params = regd_instance.get('params')
-        fullname=firstname+" "+lastname
+        # Check in User Table
         try:
-            import json
-            name = f'{fullname}'
-            email = f'{Email}'
-            mobno = f'{Mobno}'
-            adhaar = f'{Adhaar}'
-            user_category = f'{user_cat}'
+            user = User.objects.get(token=token)
+            return JsonResponse({
+                'message': 'Authenticated successfully.',
+                'model': 'User',
+                'token': user.token,
+                'mobile_no': user.Mob,
+                'username': user.Company_name,
+            })
+        except User.DoesNotExist:
+            pass
+
+        # Check in Manager Table
+        try:
+            manager = Manager.objects.get(token=token)
+            return JsonResponse({
+                'message': 'Authenticated successfully.',
+                'model': 'Manager',
+                'token': manager.token,
+                'mobile_no': manager.Mob,
+                'username': manager.username,
+                'user_category': manager.user_category,
+                'connected_user': manager.user.Mob  # Fk to User model
+            })
+        except Manager.DoesNotExist:
+            pass
+
+        # Token not matched in any table
+        return JsonResponse({'error': 'Invalid token or user not found.'}, status=400)
+
+
+
+
+#***********User Registration********#
+########################################
+@api_view(['POST'])
+@csrf_exempt        
+def user_registration(request):
+    if request.method == 'POST':
+        try:
+            # Incoming request data
+            firstname = request.data.get('firstname')
+            lastname = request.data.get('lastname')
+            email = request.data.get('email')
+            mob = request.data.get('mobno')
+            password = request.data.get('password')
+
+            # Additional required fields
+            company_name = request.data.get('company_name')
+            address = request.data.get('address')
+            pan_no = request.data.get('pan_no')
+            gst_no = request.data.get('gst_no')
+            customer_id = request.data.get('customer_id')
+            user_category= request.data.get('user_category')
+            full_name = f"{firstname} {lastname}"
+            print(user_category)
+            if user_category==None or user_category=='':
+                print('*****')
+                user_category="Aquafarming"
+
+            ########################################################
+            #********Function to Create table if not exists********#
+            ########################################################
             
-            
-            if user_cat == '3d':
-                params = f'{params}'
-                param = {
-                    'host':settings.THREED_DB_HOST,
-                    'database':settings.THREED_DB_NAME,
-                    'user':settings.THREED_DB_USER,
-                    'password':settings.THREED_DB_PASS
-                    }
-                conn = psycopg2.connect(**param)
-                print("connected")
-                cur = conn.cursor() 
-                cur.execute('INSERT INTO public.myapp_registration("Name", "Email", "Mobno", "Adhaar", "user_category", "params") VALUES (%s, %s, %s, %s, %s, %s);', (name, email, mobno, adhaar, user_category, params))
-                conn.commit()
-                return JsonResponse({'message': 'Registration successfully as 3d-Dashboard user'})
-            
-            
-            elif user_cat == 'analytics':
-                params = f'{json.dumps(params)}'
-                param = {
-                    'host':settings.ADMIN_DASH_DB_HOST,
-                    'database':settings.ADMIN_DASH_DB_NAME,
-                    'user':settings.ADMIN_DASH_DB_USER,
-                    'password':settings.ADMIN_DASH_DB_PASS
-                    }
-                conn = psycopg2.connect(**param)
-                print("connected")
-                cur = conn.cursor() 
-                cur.execute('INSERT INTO public.app1_registration("Name", "Email", "Mobno", "Adhaar", "user_category", "params") VALUES (%s, %s, %s, %s, %s, %s);', (name, email, mobno, adhaar, user_category, params))
-                conn.commit()
-                return JsonResponse({'message': 'Registration successfully as Analytics-Dashboard user'})
-            
-            
-            
-            elif user_cat == 'aqua':
-                local_user = User(
-                    Name=fullname,
-                    Email=Email,
-                    Mobno=Mobno,
-                    Adhaar=Adhaar,
-                    user_category=user_category,
-                    password=params
-                )
-                local_user.save()
-                
-                
-                params = f'{params}'
-                param = {
-                    'host':settings.AQUA_FARM_DB_HOST,
-                    'database':settings.AQUA_FARM_DB_NAME,
-                    'user':settings.AQUA_FARM_DB_USER,
-                    'password':settings.AQUA_FARM_DB_PASS
-                    }
-                conn = psycopg2.connect(**param)
-                print("connected")
-                cur = conn.cursor() 
-                cur.execute('INSERT INTO public.myapp_user("Name", "Email", "Mob", "adhaar", "user_category", "password") VALUES (%s, %s, %s, %s, %s, %s);', (name,email, mobno, adhaar, user_category, params)) and ('INSERT INTO public.myapp_user("Name", "Email", "Mobno", "adhaar", "user_category", "password") VALUES (%s, %s, %s, %s, %s, %s);', (name, email, mobno, adhaar, user_category, params))
-                conn.commit()
-                return JsonResponse({'message': 'Registration successfully as Aqua-Farming user'})
-            
-            elif user_cat == 'water':
-                water_user = User(
-                    Name=fullname,
-                    Email=Email,
-                    Mobno=Mobno,
-                    Adhaar=Adhaar,
-                    user_category=user_category,
-                    password=params
-                )
-                water_user.save()
-                params = f'{params}'
-                param = {
-                    'host':settings.WATERBODY_DB_HOST,
-                    'database':settings.WATERBODY_DB_NAME,
-                    'user':settings.WATERBODY_DB_USER,
-                    'password':settings.WATERBODY_DB_PASS
-                    }
-                conn = psycopg2.connect(**param)
-                print("connected")
-                cur = conn.cursor() 
-                cur.execute('INSERT INTO public.myapp_user("Name", "Email", "Mob", "adhaar", "user_category", "password") VALUES (%s, %s, %s, %s, %s, %s);', (name,email, mobno, adhaar, user_category, params)) and ('INSERT INTO public.myapp_user("Name", "Email", "Mob", "adhaar", "user_category", "password") VALUES (%s, %s, %s, %s, %s, %s);', (name, email, mobno, adhaar, user_category, params))
-                conn.commit()
-                return JsonResponse({'message': 'Registration successfully as Water-Body user'})
-            else:
-                return JsonResponse({'error': 'Error occured!'})
+            # Create authentication token
+            token = get_token(request)
+
+            # Save to Django database
+            user_obj = User(
+                Name=full_name,
+                Company_name=company_name,
+                Mob=mob,
+                Email=email,
+                Customer_id=customer_id,
+                user_category=user_category,
+                password=password,
+                address=address,
+                Pan_no=pan_no,
+                GST_no=gst_no,
+                token=token,
+            )
+            user_obj.save()
+
+            # Save to external PostgreSQL DB
+            param = {
+                'host': settings.ADMIN_DASH_DB_HOST,
+                'database': settings.ADMIN_DASH_DB_NAME,
+                'user': settings.ADMIN_DASH_DB_USER,
+                'password': settings.ADMIN_DASH_DB_PASS
+            }
+
+            conn = psycopg2.connect(**param)
+            cur = conn.cursor()
+            cur.execute("""
+                INSERT INTO public.myapp_user
+                ("Name","Email", "Mob", "password",
+                 "Customer_id", "Company_name","user_category",
+                 "address", "Pan_no", "GST_no", "token")
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s)
+            """, (full_name,email,mob,password,customer_id,company_name,user_category,address,pan_no,gst_no,token))
+            conn.commit()
+            conn.close()
+
+            return JsonResponse({"message": "User successfully registered"}, status=201)
+
         except Exception as e:
-            return JsonResponse({'error': str(e)})
+            return JsonResponse({"error": str(e)}, status=500)
+
+
+
+#***********Master Registration********#
+########################################
 import random  
 @csrf_exempt
 def master_registration(request):
     if request.method == 'POST':
-        regd_instance=JSONParser().parse(request)
-        firstname=regd_instance.get('firstname')
-        lastname=regd_instance.get('lastname')
-        Email=regd_instance.get('email')
-        Mobno=regd_instance.get('mobno')
-        address=regd_instance.get('address')
-        user_cat=regd_instance.get('user_cat')
-        params = regd_instance.get('params')
-        fullname=firstname+" "+lastname
+        regd = JSONParser().parse(request)
+        firstname = regd.get('firstname')
+        lastname = regd.get('lastname')
+        email = regd.get('email')
+        mobno = regd.get('mobno')
+        address = regd.get('address')
+        user_cat = regd.get('user_cat')
+        params = regd.get('params')
+
+        fullname = f"{firstname} {lastname}"
+
         try:
-            import json
-            name = f'{fullname}'
-            email = f'{Email}'
-            mobno = f'{Mobno}'
-            address = f'{address}'
-            user_category = f'{user_cat}'
-            
-            
-            if user_cat == '3d':
-                params = f'{params}'
+            # ---------------- COMMON FUNCTIONS ----------------
+
+            def generate_customer_id(fullname):
+                first = fullname.split()[0].lower()
+                number = random.randrange(10**7, 10**10)
+                return f"{first}{number}"
+
+            def ensure_table_exists(connection, table_name):
+                """Creates table if it doesn't exist."""
+                ddl = f"""
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id SERIAL PRIMARY KEY,
+                    "Name" VARCHAR(255),
+                    "Email" VARCHAR(255),
+                    "Mobno" VARCHAR(50),
+                    "address" TEXT,
+                    "customer_id" VARCHAR(255),
+                    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    "token" TEXT,
+                    "user_category" VARCHAR(100),
+                    "password" TEXT
+                )
+                """
+                cur = connection.cursor()
+                try:
+                    cur.execute(ddl)
+                    connection.commit()
+                finally:
+                    cur.close()
+
+            def insert_into_db(settings_obj, query, values, table_name):
+                """Ensures table exists before inserting data."""
                 param = {
-                    'host':settings.THREED_DB_HOST,
-                    'database':settings.THREED_DB_NAME,
-                    'user':settings.THREED_DB_USER,
-                    'password':settings.THREED_DB_PASS
-                    }
+                    'host': settings_obj['HOST'],
+                    'database': settings_obj['NAME'],
+                    'user': settings_obj['USER'],
+                    'password': settings_obj['PASS']
+                }
                 conn = psycopg2.connect(**param)
-                print("connected")
-                cur = conn.cursor() 
-                cur.execute('INSERT INTO public.myapp_Master("Name", "Email", "Mobno", "address", "user_category", "params") VALUES (%s, %s, %s, %s, %s, %s);', (name, email, mobno, address , user_category, params))
+
+                # Ensure table exists
+                ensure_table_exists(conn, table_name)
+
+                # Insert data
+                cur = conn.cursor()
+                cur.execute(query, values)
                 conn.commit()
-                return JsonResponse({'message': 'Registration successfully as 3d-Dashboard user'})
-            
-            
+                cur.close()
+                conn.close()
+
+            # ---------------- CATEGORY HANDLING ----------------
+
+            # 3D USER
+            if user_cat == '3d':
+                customer_id = generate_customer_id(fullname)
+                current_time = datetime.datetime.now()
+                token = get_token(request)
+
+                Master.objects.create(
+                    Name=fullname,
+                    Email=email,
+                    Mobno=mobno,
+                    customer_id=customer_id,
+                    created_at=current_time,
+                    token=token,
+                    address=address,
+                    user_category=user_cat,
+                    password=params
+                )
+
+                query = """
+                    INSERT INTO public.myapp_master
+                    ("Name","Email","Mobno","address","customer_id","created_at","token","user_category","password")
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                """
+
+                insert_into_db(
+                    {
+                        "HOST": settings.ADMIN_DASH_DB_HOST,
+                        "NAME": settings.ADMIN_DASH_DB_NAME,
+                        "USER": settings.ADMIN_DASH_DB_USER,
+                        "PASS": settings.ADMIN_DASH_DB_PASS
+                    },
+                    query,
+                    (fullname, email, mobno, address, customer_id, current_time, token, user_cat, params),
+                    "public.myapp_master"
+                )
+
+                return JsonResponse({'message': 'Registration successful as 3D Dashboard user'})
+
+            # ANALYTICS USER
             elif user_cat == 'analytics':
-                if user_cat:
-                    first_word_of_name = fullname.split()[0].lower()  
-                    random_number = random.randrange(100000000,99999999999) 
-        
-                    customer_id = f"{first_word_of_name}{random_number}"
-                    current_time = datetime.datetime.now()
-                    token = get_token(request)
-                    iot_user = Master(
-                        Name=fullname,
-                        Email=Email,
-                        Mobno=Mobno,
-                        # created_at=created_at,
-                        customer_id=customer_id,
-                        address=address,
-                        user_category=user_category,
-                        password=params
-                    )
-                    iot_user.save()
-                    # params = f'{json.dumps(params)}'
-                    params = f'{params}'
-                    param = {
-                        'host':settings.ADMIN_DASH_DB_HOST,
-                        'database':settings.ADMIN_DASH_DB_NAME,
-                        'user':settings.ADMIN_DASH_DB_USER,
-                        'password':settings.ADMIN_DASH_DB_PASS
-                        }
-                    conn = psycopg2.connect(**param)
-                    print("connected")
-                    cur = conn.cursor() 
-                    cur.execute('INSERT INTO public.app1_Master("Name", "Email", "Mobno","address","customer_id","created_at","token", "user_category", "password") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);', (name,email, mobno, address,customer_id,current_time,token, user_category, params)) and ('INSERT INTO public.myapp_master("Name", "Email", "Mobno","address","customer_id","created_at","token","user_category", "password") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);', (name, email, mobno, address, customer_id, current_time, user_category,token, params))
-                    conn.commit()
-                    return JsonResponse({'message': 'Registration successfully as Analytics-Dashboard user'})
-                else:
-                    return JsonResponse({'error': 'Error occured!'})
-                
-            
+                customer_id = generate_customer_id(fullname)
+                current_time = datetime.datetime.now()
+                token = get_token(request)
+
+                Master.objects.create(
+                    Name=fullname,
+                    Email=email,
+                    Mobno=mobno,
+                    customer_id=customer_id,
+                    created_at=current_time,
+                    token=token,
+                    address=address,
+                    user_category=user_cat,
+                    password=params
+                )
+
+                query = """
+                    INSERT INTO public.myapp_master
+                    ("Name","Email","Mobno","address","customer_id","created_at","token","user_category","password")
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                """
+
+                insert_into_db(
+                    {
+                        "HOST": settings.ADMIN_DASH_DB_HOST,
+                        "NAME": settings.ADMIN_DASH_DB_NAME,
+                        "USER": settings.ADMIN_DASH_DB_USER,
+                        "PASS": settings.ADMIN_DASH_DB_PASS
+                    },
+                    query,
+                    (fullname, email, mobno, address, customer_id, current_time, token, user_cat, params),
+                    "public.myapp_master"
+                )
+
+                return JsonResponse({'message': 'Registration successful as Analytics Dashboard user'})
+
+            # AQUA USER
             elif user_cat == 'aqua':
-                if user_cat:
-                    first_word_of_name = fullname.split()[0].lower()  
-                    random_number = random.randrange(100000000,99999999999) 
-        
-                    customer_id = f"{first_word_of_name}{random_number}"
-                    current_time = datetime.datetime.now()
-                    # token = get_token(request)
-                    token = csrf.get_token(request)
-                    local_user = Master(
-                        Name=fullname,
-                        Email=Email,
-                        Mobno=Mobno,
-                        address=address,
-                        customer_id=customer_id,
-                        # created_at=created_at,
-                        created_at=current_time,
-                        user_category=user_category,
-                        password=params
-                    )
-                    local_user.save()  
-                    print("User saved successfully")
-                    
-                    params = f'{params}'
-                    print(params)
-                    param = {
-                        'host':settings.AQUA_FARM_DB_HOST,
-                        'database':settings.AQUA_FARM_DB_NAME,
-                        'user':settings.AQUA_FARM_DB_USER,
-                        'password':settings.AQUA_FARM_DB_PASS
-                        }
-                    conn = psycopg2.connect(**param)
-                    print("connected")
-                    cur = conn.cursor() 
-                    
-                    cur.execute('INSERT INTO public.myapp_master("Name", "Email", "Mobno","address","customer_id","created_at","token", "user_category", "password") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);', (name,email, mobno, address,customer_id,current_time,token, user_category, params)) and ('INSERT INTO public.myapp_master("Name", "Email", "Mobno","address","customer_id","created_at","token","user_category", "password") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);', (name, email, mobno, address, customer_id, current_time, user_category,token, params))
-                    conn.commit()
-                    return JsonResponse({'message': 'Registration successfully as Aqua-Farming user'})
-                else:
-                    return JsonResponse({'error': 'Error occured!'})
-            
+                customer_id = generate_customer_id(fullname)
+                current_time = datetime.datetime.now()
+                token = csrf.get_token(request)
+
+                Master.objects.create(
+                    Name=fullname,
+                    Email=email,
+                    Mobno=mobno,
+                    customer_id=customer_id,
+                    token=token,
+                    address=address,
+                    created_at=current_time,
+                    user_category=user_cat,
+                    password=params
+                )
+
+                query = """
+                    INSERT INTO public.myapp_master
+                    ("Name","Email","Mobno","address","customer_id","created_at","token","user_category","password")
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                """
+
+                insert_into_db(
+                    {
+                        "HOST": settings.ADMIN_DASH_DB_HOST,
+                        "NAME": settings.ADMIN_DASH_DB_NAME,
+                        "USER": settings.ADMIN_DASH_DB_USER,
+                        "PASS": settings.ADMIN_DASH_DB_PASS
+                    },
+                    query,
+                    (fullname, email, mobno, address, customer_id, current_time, token, user_cat, params),
+                    "public.myapp_master"
+                )
+
+                return JsonResponse({'message': 'Registration successful as Aqua Farming user'})
+
+            # WATERBODY USER
             elif user_cat == 'water':
-                if user_cat:
-                    first_word_of_name = fullname.split()[0].lower()  
-                    random_number = random.randrange(100000000,99999999999) 
-        
-                    customer_id = f"{first_word_of_name}{random_number}"
-                    current_time = datetime.datetime.now()
-                    token = get_token(request)
-                    water_user = User(
-                        Name=fullname,
-                        Email=Email,
-                        Mobno=Mobno,
-                        # created_at=created_at,
-                        customer_id=customer_id,
-                        address=address,
-                        user_category=user_category,
-                        password=params
-                    )
-                    water_user.save()
-                    params = f'{params}'
-                    param = {
-                        'host':settings.WATERBODY_DB_HOST,
-                        'database':settings.WATERBODY_DB_NAME,
-                        'user':settings.WATERBODY_DB_USER,
-                        'password':settings.WATERBODY_DB_PASS
-                        }
-                    conn = psycopg2.connect(**param)
-                    print("connected")
-                    cur = conn.cursor() 
-                    cur.execute('INSERT INTO public.myapp_Master("Name", "Email", "Mobno","address","customer_id","created_at","token", "user_category", "password") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);', (name,email, mobno, address,customer_id,current_time,token, user_category, params)) and ('INSERT INTO public.myapp_master("Name", "Email", "Mobno","address","customer_id","created_at","token","user_category", "password") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);', (name, email, mobno, address, customer_id, current_time, user_category,token, params))
-                    conn.commit()
-                    return JsonResponse({'message': 'Registration successfully as Water-Body user'})
-                else:
-                    return JsonResponse({'error': 'choose correct category!'})
+                customer_id = generate_customer_id(fullname)
+                current_time = datetime.datetime.now()
+                token = get_token(request)
+
+                Master.objects.create(
+                    Name=fullname,
+                    Email=email,
+                    Mobno=mobno,
+                    customer_id=customer_id,
+                    created_at=current_time,
+                    token=token,
+                    address=address,
+                    user_category=user_cat,
+                    password=params
+                )
+
+                query = """
+                    INSERT INTO public.myapp_master
+                    ("Name","Email","Mobno","address","customer_id","created_at","token","user_category","password")
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                """
+
+                insert_into_db(
+                    {
+                        "HOST": settings.ADMIN_DASH_DB_HOST,
+                        "NAME": settings.ADMIN_DASH_DB_NAME,
+                        "USER": settings.ADMIN_DASH_DB_USER,
+                        "PASS": settings.ADMIN_DASH_DB_PASS
+                    },
+                    query,
+                    (fullname, email, mobno, address, customer_id, current_time, token, user_cat, params),
+                    "public.myapp_master"
+                )
+
+                return JsonResponse({'message': 'Registration successful as Water Body user'})
+
             else:
-                return JsonResponse({'error': 'Error occured!'})
+                return JsonResponse({'error': 'Invalid user category!'})
+
         except Exception as e:
             return JsonResponse({'error': str(e)})
-            
+
+
+
+#***********Manager Helper FunctionRegistration********#
+########################################################
+def ensure_table_exists(connection, table_name):
+    ddl = f"""
+    CREATE TABLE IF NOT EXISTS {table_name} (
+        "user_id" INTEGER,
+        "username" VARCHAR(255),
+        "email" VARCHAR(255),
+        "Mob" VARCHAR(50),
+        "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        "token" TEXT,
+        "user_category" VARCHAR(100),
+        "password" TEXT
+    )
+    """
+    cur = connection.cursor()
+    try:
+        cur.execute(ddl)
+        connection.commit()
+    finally:
+        cur.close()
+
+
+#***********Manager Registration********#
+########################################################
+class ManagerRegisterview(APIView):
+    def post(self, request):
+        token = get_token(request)
+
+        serializer = ManagerRegisterSerializer(
+            data=request.data,
+            context={'token': token}
+        )
+        serializer.is_valid(raise_exception=True)
+        manager = serializer.save()
+
+        # ================= External DB Insert =================
+        try:
+            connection = psycopg2.connect(
+                host=settings.ADMIN_DASH_DB_HOST,
+                dbname=settings.ADMIN_DASH_DB_NAME,
+                user=settings.ADMIN_DASH_DB_USER,
+                password=settings.ADMIN_DASH_DB_PASS
+            )
+
+            table_name = "myapp_manager"
+            ensure_table_exists(connection, table_name)
+
+            cur = connection.cursor()
+            insert_query = f"""
+                INSERT INTO {table_name}
+                ("user_id", "username", "email", "Mob",
+                 "token", "user_category", "password")
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """
+
+            cur.execute(
+                insert_query,
+                (
+                    manager.user_id,        # FK user id
+                    manager.username,
+                    manager.email,
+                    manager.Mob,
+                    manager.token,
+                    manager.user_category,
+                    manager.password
+                )
+            )
+
+            connection.commit()
+            cur.close()
+            connection.close()
+
+        except Exception as e:
+            return Response(
+                {"error": f"External DB insert failed: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        return Response(
+            {"sms": "Manager registered successfully"},
+            status=status.HTTP_201_CREATED
+        )
+
+
+
+
+       
 
 @csrf_exempt
 def register_view(request):
-    try:
-        if request.method == 'GET':
-            data = Master.objects.all()
-            final_list = [(data.Name,data.Mobno,data.Email,data.password,data.created_at,data.customer_id,data.token,data.address,data.user_category) for data in data]
-            return JsonResponse({"items":final_list})
-        else:
-            pass
-    except Exception as e:  
-            return JsonResponse({'error': str(e)}, status=500)
+    if request.method == 'GET':
+        data = Master.objects.all()
+        serializer=MasterDetailsSerializer(data)
+        return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
+    else:
+        return Response({"sms":"NotFound"},status=status.HTTP_404_NOT_FOUND)
+
+    
+
 # @api_view(['POST'])
 # @csrf_exempt        
 # def admincreate(request):

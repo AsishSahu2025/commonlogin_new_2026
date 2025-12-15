@@ -7,33 +7,33 @@ class Master(models.Model):
     Mobno=models.BigIntegerField(primary_key=True)
     password=models.CharField(max_length=50)
     created_at=models.DateTimeField(auto_now_add=True)
-    # customer_id=models.CharField(max_length=100)                                #commented by tapas
-    # token = models.CharField(max_length=100,blank=True, null=True)
-    # address = models.CharField(max_length=100)
-    # USER_TYPES = (
-    #     ('3d', '3d'),
-    #     ('analytics', 'analytics'),
-    #     ('aqua', 'aqua'),
-    #     ('water', 'water'),
-    # )
-    # user_category = models.CharField(max_length=30, choices=USER_TYPES,default=USER_TYPES)
+    customer_id=models.CharField(max_length=100)                                #commented by tapas
+    token = models.CharField(max_length=100,blank=True, null=True)
+    address = models.CharField(max_length=100)
+    USER_TYPES = (
+        ('3d', '3d'),
+        ('analytics', 'analytics'),
+        ('aqua', 'aqua'),
+        ('water', 'water'),
+    )
+    user_category = models.CharField(max_length=30, choices=USER_TYPES,default=USER_TYPES)
     def __str__(self):
         return self.Name 
         
 
 
-class User(models.Model):  
-    # id = models.AutoField()                                       
+class User(models.Model):    
+    Name=models.CharField(max_length=50)            
     Company_name=models.CharField(max_length=30,null=False)
-    Mob=models.BigIntegerField(primary_key=True,unique=True)
-    Email=models.EmailField()
-    Customer_id=models.CharField(max_length=100)
+    Mob=models.BigIntegerField(primary_key=True)
+    Email=models.EmailField(unique=True)
+    Customer_id=models.CharField(max_length=100,null=True,blank=True)
     password = models.CharField(max_length=50, blank=True, null=True)
     address=models.CharField(max_length=100, blank=True, null=True)
     Pan_no = models.CharField(max_length=50)
     GST_no = models.CharField(max_length=50)
-    user_category = models.CharField(max_length=50, blank=True, null=True)                   #commentout by tapas
-    customer_category = models.CharField(max_length=50, blank=True, null=True) 
+    user_category = models.CharField(max_length=50,null=True,blank=True)                 
+    # customer_category = models.CharField(max_length=50, blank=True, null=True)     #commented by Abhisek
     token = models.CharField(max_length=200,blank=True,null=True)                    #commented by soumya
     # telegram_username = models.CharField(max_length=50, null=True, blank=True)
     def __str__(self):
@@ -45,7 +45,12 @@ class Manager(models.Model):
     password = models.CharField(max_length=50)
     Mob = models.BigIntegerField(primary_key=True)
     email = models.EmailField()
-    # company_name = models.CharField(max_length=50,null=True)
+    USER_TYPES = (
+        ('Aquafarming', 'Aquafarming'),
+        ('WaterBody', 'WaterBody'),  
+    )
+    user_category = models.CharField(max_length=50, choices=USER_TYPES) 
+    token=models.CharField(max_length=100,null=True)   
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     
     def __str__(self):

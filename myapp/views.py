@@ -148,7 +148,7 @@ def login(request):
                 masters = Master.objects.filter(Mobno=identifier, password=password)
                 users = User.objects.filter(Mob=identifier, password=password)
                 managers = Manager.objects.filter(Mob=identifier, password=password)
-
+            token=get_token(request)
             # MASTER LOGIN
             if masters.exists():
                 master = masters.first()
@@ -157,7 +157,7 @@ def login(request):
                     'Mob': master.Mobno,
                     'name': master.Name,
                     'email': master.Email,
-                    'csrf_token': get_token(request),
+                    'csrf_token':token,
                     'category': 'master'
                 }
                 return JsonResponse(response_data, status=200)
@@ -166,14 +166,13 @@ def login(request):
             if users.exists():
                 user = users.first()
                 if user.user_category in ['WaterBody', 'Aquafarming']:
-                    csrf_token = get_token(request)
                     response_data = {
                         'message': 'You have successfully logged in to the owner page...',
                         'Mob': user.Mob,
                         'name': user.Company_name,
                         'email': user.Email,
                         'user_category':user.user_category,
-                        'csrf_token': csrf_token,
+                        'csrf_token': token,
                         'category': "owner"
                     }
                     return JsonResponse(response_data, status=200)
@@ -183,13 +182,12 @@ def login(request):
                 manager = managers.first()
                 user = manager.user
                 if user.user_category in ['WaterBody', 'Aquafarming']:
-                    csrf_token = get_token(request)
                     response_data = {
                         'message': 'You have successfully logged in as a manager...',
                         'Mob': manager.Mob,
                         'name': manager.username,
                         'email': manager.email,
-                        'csrf_token': csrf_token,
+                        'csrf_token': token,
                         'user_category': manager.user_category,
                         'category': "manager"
                     }

@@ -7,7 +7,7 @@ class Master(models.Model):
     Mobno=models.BigIntegerField(primary_key=True)
     password=models.CharField(max_length=50)
     created_at=models.DateTimeField(auto_now_add=True)
-    customer_id=models.CharField(max_length=100)                                #commented by tapas
+    customer_id=models.CharField(max_length=100)                              
     token = models.CharField(max_length=100,blank=True, null=True)
     address = models.CharField(max_length=100)
     USER_TYPES = (

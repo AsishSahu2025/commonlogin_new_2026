@@ -23,7 +23,7 @@ import os
 SECRET_KEY = 'django-insecure-qy%yqfqt@#*iz59jyhuu99p73)g-r%5-umq7+xhyz43ycxn^c-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # ALLOWED_HOSTS = ['*','login.bc-pl.com']
 ALLOWED_HOSTS = ['*','192.168.1.40']
@@ -150,14 +150,19 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CSRF_TRUSTED_ORIGINS = [
-#     'https://newloginbg.bc-pl.com',
-# ]
+CORS_ALLOWED_ORIGINS = [
+    "https://autofeeder.bc-pl.com",
+    "http://localhost:5173",
+]
 
 
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8000", 
+    "https://autofeederbg.bc-pl.com",
+]
 
+CORS_ALLOW_CREDENTIALS = True
 
-CORS_ORIGIN_ALLOW_ALL = True
 
 
 EMAIL_BACKEND= "django.core.mail.backends.smtp.EmailBackend"
@@ -168,11 +173,11 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ORIGIN_CREDENTIALS = True
-CORS_ORIGIN_WHITELIST =[
-    'https://localhost:3000',
-]
+# CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ORIGIN_CREDENTIALS = True
+# CORS_ORIGIN_WHITELIST =[
+#     'https://localhost:3000',
+# ]
 # CORS_ORIGIN_REGEX_WHITELIST = [
 #     'https://localhost:3000',
 # ]

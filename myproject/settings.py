@@ -158,7 +158,7 @@ CORS_ALLOWED_ORIGINS = [
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000", 
-    "https://autofeederbg.bc-pl.com",
+    "https://newloginbg.bc-pl.com",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -172,15 +172,6 @@ EMAIL_HOST_PASSWORD = 'pgvw cgtd hkbh chak'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-
-# CORS_ORIGIN_ALLOW_ALL = True
-# CORS_ORIGIN_CREDENTIALS = True
-# CORS_ORIGIN_WHITELIST =[
-#     'https://localhost:3000',
-# ]
-# CORS_ORIGIN_REGEX_WHITELIST = [
-#     'https://localhost:3000',
-# ]
 
 
 

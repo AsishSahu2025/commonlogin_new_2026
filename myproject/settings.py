@@ -150,7 +150,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
     "https://newlogin.bc-pl.com",
-    "http://localhost:3001",
+    "http://192.168.1.17:3001","*"
 ]
 # CORS_ALLOW_ALL_ORIGINS=True
 

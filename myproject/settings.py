@@ -24,12 +24,10 @@ SECRET_KEY = 'django-insecure-qy%yqfqt@#*iz59jyhuu99p73)g-r%5-umq7+xhyz43ycxn^c-
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-
-# ALLOWED_HOSTS = ['*','login.bc-pl.com']
-ALLOWED_HOSTS = ['*','192.168.1.40']
+ALLOWED_HOSTS = ["newloginbg.bc-pl.com","*"]
 
 
-# Application definition
+################ Application definition ###############
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -151,9 +149,10 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
-    "https://autofeeder.bc-pl.com",
-    "http://localhost:5173",
+    "https://newlogin.bc-pl.com",
+    "http://localhost:3001",
 ]
+# CORS_ALLOW_ALL_ORIGINS=True
 
 
 CSRF_TRUSTED_ORIGINS = [

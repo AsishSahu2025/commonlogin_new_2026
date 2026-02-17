@@ -148,11 +148,12 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOWED_ORIGINS = [
-    "https://newlogin.bc-pl.com",
-    "http://192.168.1.17:3001",
-]
-# CORS_ALLOW_ALL_ORIGINS=True
+#CORS_ALLOWED_ORIGINS = [
+  #  "https://newlogin.bc-pl.com",
+   # "http://localhost:3001",
+ #   "http://localhost:3000",
+#]
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 CSRF_TRUSTED_ORIGINS = [

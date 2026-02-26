@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 class Master(models.Model):
     Name=models.CharField(max_length=50)
@@ -34,8 +35,8 @@ class User(models.Model):
     GST_no = models.CharField(max_length=50)
     user_category = models.CharField(max_length=50,null=True,blank=True)                 
     # customer_category = models.CharField(max_length=50, blank=True, null=True)     #commented by Abhisek
-    token = models.CharField(max_length=200,blank=True,null=True)                    #commented by soumya
-    # telegram_username = models.CharField(max_length=50, null=True, blank=True)
+    token = models.CharField(max_length=200,blank=True,null=True)                    
+    # telegram_username = models.CharField(max_length=50, null=True, blank=True)      #commented by Abhisek
     def __str__(self):
         return str(self.Company_name)
     

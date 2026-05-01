@@ -24,7 +24,7 @@ SECRET_KEY = 'django-insecure-qy%yqfqt@#*iz59jyhuu99p73)g-r%5-umq7+xhyz43ycxn^c-
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ALLOWED_HOSTS = ['*','newloginbg.bc-pl.com']
+ALLOWED_HOSTS = ['newcommonbg1.bc-pl.com','www.newcommonbg1.bc-pl.com']
 
 
 ################ Application definition ###############
@@ -148,18 +148,14 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-#CORS_ALLOWED_ORIGINS = [
-  #  "https://newlogin.bc-pl.com",
-   # "http://localhost:3001",
- #   "http://localhost:3000",
-#]
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+   "https://newcommon.bc-pl.com",
+]
+# CORS_ALLOW_ALL_ORIGINS = True
 
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:8000", 
-    "http://localhost:8001", 
-    "https://newloginbg.bc-pl.com",
+    "https://newcommon.bc-pl.com",
 ]
 
 CORS_ALLOW_CREDENTIALS = True

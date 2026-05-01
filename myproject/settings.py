@@ -156,6 +156,7 @@ CORS_ALLOWED_ORIGINS = [
 
 CSRF_TRUSTED_ORIGINS = [
     "https://newcommon.bc-pl.com",
+    "https://newcommonbg1.bc-pl.com"
 ]
 
 CORS_ALLOW_CREDENTIALS = True

@@ -25,14 +25,14 @@ class Master(models.Model):
 
 class User(models.Model):    
     Name=models.CharField(max_length=50)            
-    Company_name=models.CharField(max_length=30,null=False)
+    Company_name=models.CharField(max_length=30,null=False,blank=True)
     Mob=models.BigIntegerField(primary_key=True)
-    Email=models.EmailField(unique=True)
+    Email=models.EmailField(unique=True, null=True, blank=True)
     Customer_id=models.CharField(max_length=100,null=True,blank=True)
-    password = models.CharField(max_length=50, blank=True, null=True)
+    password = models.CharField(max_length=50,)
     address=models.CharField(max_length=100, blank=True, null=True)
-    Pan_no = models.CharField(max_length=50)
-    GST_no = models.CharField(max_length=50)
+    Pan_no = models.CharField(max_length=50, blank=True, null=True)
+    GST_no = models.CharField(max_length=50, null=True, blank=True)
     user_category = models.CharField(max_length=50,null=True,blank=True)                 
     # customer_category = models.CharField(max_length=50, blank=True, null=True)     #commented by Abhisek
     token = models.CharField(max_length=200,blank=True,null=True)                    

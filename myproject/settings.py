@@ -24,7 +24,7 @@ SECRET_KEY = 'django-insecure-qy%yqfqt@#*iz59jyhuu99p73)g-r%5-umq7+xhyz43ycxn^c-
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ALLOWED_HOSTS = ['newcommonbg1.bc-pl.com','www.newcommonbg1.bc-pl.com']
+ALLOWED_HOSTS = ['aqua1bg.bc-pl.com','www.aqua1bg.bc-pl.com','aquabg.bc-pl.com','www.aquabg.bc-pl.com','*']
 
 
 ################ Application definition ###############
@@ -80,25 +80,17 @@ DATABASES = {
     'default':{
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'commonlogin',                           
-        'USER': 'Vertoxlabs1987Bfl',
-        'PASSWORD':'Vtx@1987#2026#Bfl@',
-        'HOST': 'vertoxlabsdb.postgres.database.azure.com',
+        'USER': 'bariflo',
+        'PASSWORD':'Bariflo@2401',
+        'HOST': '122.176.31.88',
         'PORT': '5432', 
     },
-    # "default": {   # Local PostgreSQL (for development)
-    #     "ENGINE": "django.contrib.gis.db.backends.postgis",
-    #     "NAME": "commonlogin",   # your local DB name
-    #     "USER": "vertoxl",         # your local postgres username
-    #     "PASSWORD": "vertoxlabs", # your local postgres password
-    #     "HOST": "192.168.1.140",
-    #     "PORT": "5432",
-    # }
 }
 ################## Admin IOT Database ########################################################
-ADMIN_DASH_DB_NAME = 'aquafarm'
-ADMIN_DASH_DB_USER = 'Vertoxlabs1987Bfl'
-ADMIN_DASH_DB_PASS = 'Vtx@1987#2026#Bfl@'
-ADMIN_DASH_DB_HOST = 'vertoxlabsdb.postgres.database.azure.com'
+ADMIN_DASH_DB_NAME = 'aquafarm3'
+ADMIN_DASH_DB_USER = 'bariflo'
+ADMIN_DASH_DB_PASS = 'Bariflo@2401'
+ADMIN_DASH_DB_HOST = '122.176.31.88'
 ADMIN_DASH_DB_PORT = '5432'
 
 
@@ -149,14 +141,15 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
-   "https://newcommon.bc-pl.com",
+   "https://aqua1.bc-pl.com",
 ]
-# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://newcommon.bc-pl.com",
-    "https://newcommonbg1.bc-pl.com"
+    "https://aqua1.bc-pl.com",
+    "https://aqua1bg.bc-pl.com",
+    "http://192.168.1.7:8003"
 ]
 
 CORS_ALLOW_CREDENTIALS = True

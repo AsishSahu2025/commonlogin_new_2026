@@ -147,8 +147,9 @@ def login(request):
             else:
                 masters = Master.objects.filter(Mobno=identifier, password=password)
                 users = User.objects.filter(Mob=identifier, password=password)
+                print(users)
                 managers = Manager.objects.filter(Mob=identifier, password=password)
-            token=get_token(request)
+            # token=get_token(request)
             # MASTER LOGIN
             if masters.exists():
                 master = masters.first()
@@ -157,7 +158,7 @@ def login(request):
                     'Mob': master.Mobno,
                     'name': master.Name,
                     'email': master.Email,
-                    'csrf_token':token,
+                    # 'csrf_token':token,
                     'category': 'master'
                 }
                 return JsonResponse(response_data, status=200)
@@ -172,7 +173,7 @@ def login(request):
                         'name': user.Company_name,
                         'email': user.Email,
                         'user_category':user.user_category,
-                        'csrf_token': token,
+                        # 'csrf_token': token,
                         'category': "owner"
                     }
                     return JsonResponse(response_data, status=200)
@@ -187,7 +188,7 @@ def login(request):
                         'Mob': manager.Mob,
                         'name': manager.username,
                         'email': manager.email,
-                        'csrf_token': token,
+                        # 'csrf_token': token,
                         'user_category': manager.user_category,
                         'category': "manager"
                     }
@@ -267,21 +268,23 @@ def token_verification(request):
 def user_registration(request):
     if request.method == 'POST':
         try:
+            print(request.data)
             # Incoming request data
-            firstname = request.data.get('firstname')
-            lastname = request.data.get('lastname')
-            email = request.data.get('email')
+            # firstname = request.data.get('firstname')
+            # lastname = request.data.get('lastname')
+            # email = request.data.get('email')
+
             mob = request.data.get('mobno')
             password = request.data.get('password')
 
             # Additional required fields
-            company_name = request.data.get('company_name')
-            address = request.data.get('address')
-            pan_no = request.data.get('pan_no')
-            gst_no = request.data.get('gst_no')
-            customer_id = request.data.get('customer_id')
+            # company_name = request.data.get('company_name')
+            # address = request.data.get('address')
+            # pan_no = request.data.get('pan_no')
+            # gst_no = request.data.get('gst_no')
+            # customer_id = request.data.get('customer_id')
             user_category= request.data.get('user_category')
-            full_name = f"{firstname} {lastname}"
+            full_name = request.data.get('name')
             print(user_category)
             if user_category==None or user_category=='':
                 print('*****')
@@ -297,38 +300,38 @@ def user_registration(request):
             # Save to Django database
             user_obj = User(
                 Name=full_name,
-                Company_name=company_name,
+                # Company_name=company_name,
                 Mob=mob,
-                Email=email,
-                Customer_id=customer_id,
+                # Email=email,
+                # Customer_id=customer_id,
                 user_category=user_category,
                 password=password,
-                address=address,
-                Pan_no=pan_no,
-                GST_no=gst_no,
+                # address=address,
+                # Pan_no=pan_no,
+                # GST_no=gst_no,
                 token=token,
             )
             user_obj.save()
 
             # Save to external PostgreSQL DB
-            param = {
-                'host': settings.ADMIN_DASH_DB_HOST,
-                'database': settings.ADMIN_DASH_DB_NAME,
-                'user': settings.ADMIN_DASH_DB_USER,
-                'password': settings.ADMIN_DASH_DB_PASS
-            }
+            # param = {
+            #     'host': settings.ADMIN_DASH_DB_HOST,
+            #     'database': settings.ADMIN_DASH_DB_NAME,
+            #     'user': settings.ADMIN_DASH_DB_USER,
+            #     'password': settings.ADMIN_DASH_DB_PASS
+            # }
 
-            conn = psycopg2.connect(**param)
-            cur = conn.cursor()
-            cur.execute("""
-                INSERT INTO public.myapp_user
-                ("Name","Email", "Mob", "password",
-                 "Customer_id", "Company_name","user_category",
-                 "address", "Pan_no", "GST_no", "token")
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s)
-            """, (full_name,email,mob,password,customer_id,company_name,user_category,address,pan_no,gst_no,token))
-            conn.commit()
-            conn.close()
+            # conn = psycopg2.connect(**param)
+            # cur = conn.cursor()
+            # cur.execute("""
+            #     INSERT INTO public.myapp_user
+            #     ("Name","Email", "Mob", "password",
+            #      "Customer_id", "Company_name","user_category",
+            #      "address", "Pan_no", "GST_no", "token")
+            #     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s)
+            # """, (full_name,email,mob,password,customer_id,company_name,user_category,address,pan_no,gst_no,token))
+            # conn.commit()
+            # conn.close()
 
             return JsonResponse({"message": "User successfully registered"}, status=201)
 
